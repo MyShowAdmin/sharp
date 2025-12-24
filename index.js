@@ -87,6 +87,7 @@ app.post('/render', async (req, res) => {
       crop,
       mask,
       target,
+      texts,
       meta
     } = req.body;
 
@@ -166,7 +167,7 @@ app.post('/render', async (req, res) => {
       =========================== */
 
     const textSvg = buildTextsSvg({
-      texts: meta.texts,          // ← envoyé depuis le front
+      texts,          // ← envoyé depuis le front
       width: background.width,
       height: background.height
     });
