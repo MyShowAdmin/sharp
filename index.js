@@ -1,6 +1,27 @@
 import express from 'express';
 import cors from 'cors';
 import sharp from 'sharp';
+import { v2 as cloudinary } from 'cloudinary';
+
+// ✅ Cloudinary auto-config via CLOUDINARY_URL
+console.log("CLOUDINARY_URL =", process.env.CLOUDINARY_URL);
+cloudinary.v2.config();
+
+function uploadToCloudinary(buffer) {
+  return new Promise((resolve, reject) => {
+    cloudinary.uploader.upload_stream(
+      {
+        folder: 'sharp-test',
+        resource_type: 'image',
+        format: 'jpg'
+      },
+      (error, result) => {
+        if (error) return reject(error);
+        resolve(result);
+      }
+    ).end(buffer);
+  });
+}
 
 const app = express();
 
@@ -107,6 +128,15 @@ app.post('/render', async (req, res) => {
       ])
       .jpeg({ quality: 92 })
       .toBuffer();
+
+      console.log('🧪 TEST CLOUDINARY UPLOAD');
+
+      const cloudinaryResult = await uploadToCloudinary(finalImage);
+
+      console.log('✅ CLOUDINARY OK', {
+        url: cloudinaryResult.secure_url,
+        bytes: cloudinaryResult.bytes
+});
 
     /* ===========================
        LOG FINAL 🔍
