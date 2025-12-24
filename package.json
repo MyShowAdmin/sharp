@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "cloudinary": "^2.8.0",
     "cors": "^2.8.5",
     "express": "^5.2.1",
     "sharp": "^0.34.5"
