@@ -14,7 +14,7 @@ function buildTextsSvg({ texts, width, height }) {
   const svgTexts = entries.map(t => {
     if (!t?.value) return '';
 
-    const yPx = Math.round((1 - t.y) * height);
+    const yPx = Math.round((t.y) * height);
 
     return `
       <text
