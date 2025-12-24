@@ -1,7 +1,14 @@
 import express from 'express';
-import sharp from 'sharp';
+import cors from 'cors';
 
 const app = express();
+
+app.use(cors({
+  origin: '*', // ou domaine précis plus tard
+  methods: ['POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type']
+}));
+
 app.use(express.json({ limit: '25mb' }));
 
 app.post('/render', async (req, res) => {
