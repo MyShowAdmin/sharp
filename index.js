@@ -8,6 +8,48 @@ console.log("CLOUDINARY_URL =", process.env.CLOUDINARY_URL);
 // ✅ AUTO-CONFIG depuis CLOUDINARY_URL
 cloudinary.config();
 
+function buildTextsSvg({ texts, width, height }) {
+  const entries = Object.values(texts); // name, dates, message
+
+  const svgTexts = entries.map(t => {
+    if (!t?.value) return '';
+
+    const yPx = Math.round((1 - t.y) * height);
+
+    return `
+      <text
+        x="50%"
+        y="${yPx}"
+        text-anchor="middle"
+        dominant-baseline="middle"
+        font-family="${t.font.family}"
+        font-size="${t.font.sizePx}"
+        font-weight="${t.font.weight}"
+        fill="${t.color}"
+      >
+        ${escapeXml(t.value)}
+      </text>
+    `;
+  }).join('\n');
+
+  return Buffer.from(`
+    <svg
+      width="${width}"
+      height="${height}"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      ${svgTexts}
+    </svg>
+  `);
+}
+
+function escapeXml(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
 function uploadToCloudinary(buffer) {
   return new Promise((resolve, reject) => {
     cloudinary.uploader.upload_stream(
@@ -119,12 +161,26 @@ app.post('/render', async (req, res) => {
 
     const userFinal = await userSharp.png().toBuffer();
 
+    /* ===========================
+      6️⃣.1 TEXTES (SVG)
+      =========================== */
+
+    const textSvg = buildTextsSvg({
+      texts: meta.texts,          // ← envoyé depuis le front
+      width: background.width,
+      height: background.height
+    });
+
     const finalImage = await sharp(bgBuffer)
       .composite([
         {
           input: userFinal,
           left: target.x,
           top: target.y
+        },
+        {
+          input: textSvg,
+          blend: 'over'
         }
       ])
       .jpeg({ quality: 92 })
