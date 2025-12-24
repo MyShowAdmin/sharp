@@ -3,9 +3,10 @@ import cors from 'cors';
 import sharp from 'sharp';
 import { v2 as cloudinary } from 'cloudinary';
 
-// ✅ Cloudinary auto-config via CLOUDINARY_URL
 console.log("CLOUDINARY_URL =", process.env.CLOUDINARY_URL);
-cloudinary.v2.config();
+
+// ✅ AUTO-CONFIG depuis CLOUDINARY_URL
+cloudinary.config();
 
 function uploadToCloudinary(buffer) {
   return new Promise((resolve, reject) => {
