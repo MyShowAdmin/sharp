@@ -29,22 +29,14 @@ app.post('/render', async (req, res) => {
        1️⃣ BACKGROUND
        =========================== */
 
-    const bgBuffer = await sharp({
-      create: {
-        width: background.width,
-        height: background.height,
-        channels: 4,
-        background: '#000'
-      }
-    })
-      .composite([
-        {
-          input: await fetchImage(background.url),
-          blend: 'over'
-        }
-      ])
-      .png()
-      .toBuffer();
+        const bgBuffer = await sharp(
+        await fetchImage(background.url)
+        )
+        .resize(background.width, background.height, {
+            fit: 'cover'
+        })
+        .png()
+        .toBuffer();
 
     /* ===========================
        2️⃣ IMAGE UTILISATEUR
